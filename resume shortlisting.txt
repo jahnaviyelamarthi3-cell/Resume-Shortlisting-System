@@ -1,0 +1,140 @@
+import java.util.*;
+
+public class Main {
+
+    // Candidate class
+    static class Candidate {
+        String name;
+        String[] skills;
+        int score;
+
+        Candidate(String name, String[] skills) {
+            this.name = name;
+            this.skills = skills;
+            this.score = 0;
+        }
+    }
+
+    // CO2 – LinkedList
+    static LinkedList<Candidate> candidateList = new LinkedList<>();
+
+    // CO4 – HashMap
+    static HashMap<String, List<String>> skillMap = new HashMap<>();
+
+    // CO3 – Queue
+    static Queue<Candidate> resumeQueue = new LinkedList<>();
+
+
+    // Add candidate
+    public static void addCandidate(String name, String[] skills){
+
+        Candidate c = new Candidate(name, skills);
+
+        candidateList.add(c);
+
+        resumeQueue.add(c);
+
+        for(String skill : skills){
+
+            skill = skill.trim().toLowerCase();
+
+            if(!skillMap.containsKey(skill)){
+                skillMap.put(skill,new ArrayList<>());
+            }
+
+            skillMap.get(skill).add(name);
+        }
+    }
+
+
+    // CO1 – Linear Search
+    public static void calculateScore(String[] requiredSkills){
+
+        for(Candidate c : candidateList){
+
+            int match = 0;
+
+            for(String req : requiredSkills){
+
+                for(String skill : c.skills){
+
+                    if(skill.trim().equalsIgnoreCase(req.trim())){
+                        match++;
+                    }
+
+                }
+            }
+
+            c.score = match;
+        }
+    }
+
+
+    // CO1 – Bubble Sort
+    public static void sortCandidates(){
+
+        int n = candidateList.size();
+
+        for(int i=0;i<n;i++){
+
+            for(int j=0;j<n-i-1;j++){
+
+                if(candidateList.get(j).score < candidateList.get(j+1).score){
+
+                    Candidate temp = candidateList.get(j);
+
+                    candidateList.set(j,candidateList.get(j+1));
+
+                    candidateList.set(j+1,temp);
+                }
+            }
+        }
+    }
+
+
+    public static void displayCandidates(){
+
+        System.out.println("\nShortlisted Candidates:");
+
+        for(Candidate c : candidateList){
+
+            System.out.println(c.name + " -> Match Score: " + c.score);
+        }
+    }
+
+
+    public static void main(String[] args){
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Resume Shortlisting System");
+
+        System.out.print("Enter number of candidates: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        for(int i=0;i<n;i++){
+
+            System.out.print("\nEnter Candidate Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Skills (comma separated): ");
+            String skillInput = sc.nextLine();
+
+            String[] skills = skillInput.split(",");
+
+            addCandidate(name, skills);
+        }
+
+        System.out.print("\nEnter Required Job Skills: ");
+        String req = sc.nextLine();
+
+        String[] requiredSkills = req.split(",");
+
+        calculateScore(requiredSkills);
+
+        sortCandidates();
+
+        displayCandidates();
+    }
+}
